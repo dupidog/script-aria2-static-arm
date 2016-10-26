@@ -37,8 +37,8 @@ PATH=$PATH:$TOOLCHAIN/bin/
 # 1. c-ares
 git clone https://github.com/c-ares/c-ares.git
 cd c-ares
-git checkout –b dev cares-1_12_0
-sed -i 's#\[-\]#[1.12.0]g' configure.ac
+git checkout -b dev cares-1_12_0
+sed -i 's#\[-\]#[1.12.0]#' configure.ac
 ./buildconf
 ./configure --prefix=$PREFIX --host=$HOST CC=$HOST-gcc --enable-shared=no --enable-static=yes
 make
@@ -46,9 +46,9 @@ make install
 cd ..
 
 # 2. expat
-git clone https://git.code.sf.net/p/expat/code_git expat
+git clone http://git.code.sf.net/p/expat/code_git expat
 cd expat
-git checkout –b dev R_2_2_0
+git checkout -b dev R_2_2_0
 ./buildconf.sh
 ./configure --prefix=$PREFIX --target=$HOST --host=$HOST CC=$HOST-gcc --enable-shared=no --enable-static=yes
 make
@@ -58,15 +58,16 @@ cd ..
 # 3. zlib
 git clone https://github.com/madler/zlib.git
 cd zlib
-git checkout –b dev v1.2.8
+git checkout -b dev v1.2.8
 prefix=$PREFIX AR=$HOST-ar CC=$HOST-gcc CFLAGS="-O4" ./configure --static
 make
 make install
+cd ..
 
 # 4. openssl
 git clone https://github.com/openssl/openssl.git
 cd openssl
-git checkout –b dev OpenSSL-fips-2_0_12
+git checkout -b dev OpenSSL-fips-2_0_12
 ./Configure --prefix=$PREFIX --openssldir=$PREFIX --with-zlib-lib=$PREFIX/lib --with-zlib-include=$PREFIX/include --cross-compile-prefix=$HOST- linux-armv4
 mv /usr/bin/pod2man /usr/bin/pod2man.bak
 make
