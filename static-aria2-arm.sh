@@ -31,7 +31,7 @@ PATH=$PATH:$TOOLCHAIN/bin/
 # 3. zlib
 # 4. openssl
 # 5. libssh2 (not ok yet)
-# 6. sqlite (not ok yet)
+# 6. sqlite3
 
 # Build and install dependence
 # 1. c-ares
@@ -74,11 +74,22 @@ make install
 mv /usr/bin/pod2man.bak /usr/bin/pod2man
 cd ..
 
+# 5. libssh2 (not ok yet)
+
+# 6. sqlite3
+wget http://www.sqlite.org/2016/sqlite-autoconf-3150000.tar.gz
+tar -zxf sqlite-autoconf-3150000.tar.gz
+cd sqlite-autoconf-3150000
+./configure --prefix=$PREFIX --target=$HOST --host=$HOST CC=$HOST-gcc --enable-threadsafe=no --enable-shared=no --enable-static=yes
+make
+make install
+cd ..
+
 # Build aria2
 git clone https://github.com/aria2/aria2.git
 cd aria2
 autoreconf -i
-./configure --host=$HOST --prefix=$PREFIX ARIA2_STATIC=yes CFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib" CPPFLAGS="-I$PREFIX/include"
+./configure --host=$HOST --prefix=$PREFIX ARIA2_STATIC=yes CFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib" CPPFLAGS="-I$PREFIX/include" SQLITE3_CFLAGS="-I$PREFIX/include" SQLITE3_LIBS="$PREFIX/lib/libsqlite3.la"
 make
 make install
 cd ..
