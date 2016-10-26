@@ -30,7 +30,7 @@ PATH=$PATH:$TOOLCHAIN/bin/
 # 2. expat
 # 3. zlib
 # 4. openssl
-# 5. libssh2 (not ok yet)
+# 5. libssh2
 # 6. sqlite3
 
 # Build and install dependence
@@ -75,7 +75,16 @@ make install
 mv /usr/bin/pod2man.bak /usr/bin/pod2man
 cd ..
 
-# 5. libssh2 (not ok yet)
+# 5. libssh2
+git clone https://github.com/libssh2/libssh2.git
+cd libssh2
+git checkout -b dev libssh2-1.7.0
+sed -i '/define\ HAVE_OPAQUE_STRUCTS/s/^#/\/\/#/' src/openssl.h
+./buildconf
+./configure  --prefix=HOST --target=HOST --host=$HOST CC=$HOST-gcc --with-libssl-prefix=$PREFIX --with-libz-prefix=$PREFIX LDFLAGS="-ldl" --enable-shared=no --enable-static=yes
+make
+make install
+cd ..
 
 # 6. sqlite3
 wget http://www.sqlite.org/2016/sqlite-autoconf-3150000.tar.gz
@@ -90,7 +99,7 @@ cd ..
 git clone https://github.com/aria2/aria2.git
 cd aria2
 autoreconf -i
-./configure --host=$HOST --prefix=$PREFIX ARIA2_STATIC=yes CFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib" CPPFLAGS="-I$PREFIX/include" SQLITE3_CFLAGS="-I$PREFIX/include" SQLITE3_LIBS="$PREFIX/lib/libsqlite3.la"
+./configure --host=$HOST --prefix=$PREFIX ARIA2_STATIC=yes CFLAGS="-I$PREFIX/include" LDFLAGS="-L$PREFIX/lib" CPPFLAGS="-I$PREFIX/include" SQLITE3_CFLAGS="-I$PREFIX/include" SQLITE3_LIBS="$PREFIX/lib/libsqlite3.la" LIBSSH2_CFLAGS="-I$PREFIX/include" LIBSSH2_LIBS="$PREFIX/lib/libssh2.la"
 make
 make install
 cd ..
